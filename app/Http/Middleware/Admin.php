@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,8 +18,11 @@ class Admin
     public function handle(Request $request, Closure $next): Response
     {
 
-        if (!Auth::check() || Auth::user()->slug_role !=  'admin') {
-             abort(403);    
+    $user = User::join('roles', 'roles.id', 'users.role_id')->where('users.is_deleted', 'N')
+    ->where('users.id', Auth::user()->id)->select('roles.slug')->first();
+
+        if (!Auth::check() || $user->slug !=  'admin') {
+             abort(403);
         }
         return $next($request);
     }

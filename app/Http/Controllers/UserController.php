@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -17,8 +18,8 @@ class UserController extends Controller
     public function index()
     {
         //
-        $roles = Role::all();
-        $users = User::all();
+        $roles = Role::where('is_deleted', 'N')->get();
+        $users = User::with('Role')->where('users.is_deleted', 'N')->get();
         return view('users.index', compact('users', 'roles'));
     }
 
@@ -30,12 +31,20 @@ class UserController extends Controller
         //
         $request->validate([
             'name' => 'required',
-            'username' => 'required',
-            'slug_role' => 'required',
+            'username' => 'required|unique:users,username',
+            'role_id' => 'required',
             'password' => 'required|min:6|confirmed'
         ]);
 
-        User::create($request->all());
+        $user  = new User;
+        $user->name = $request->name;
+        $user->username = $request->username;
+        $user->role_id = $request->role_id;
+        $user->password = Hash::make($request->password);
+        $user->number = $request->number;
+        $user->created_by = Auth::user()->id;
+        $user->created_date = Carbon::now();
+        $user->save();
 
         Alert::toast('Data Tersimpan', 'success');
         return redirect('user');
@@ -58,8 +67,18 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required',
             'username' => 'required',
-            'slug_role' => 'required',
+            'role_id' => 'required',
         ]);
+        $user  = User::where('slug', $id)->first();
+        $user->name = $request->name;
+        $user->username = $request->username;
+        $user->role_id = $request->role_id;
+        $user->password = Hash::make($request->password);
+        $user->number = $request->number;
+        $user->updated_by = Auth::user()->id;
+        $user->updated_date = Carbon::now();
+        $user->update();
+
 
         User::where('slug', $id)->first()->update($request->all());
 
@@ -73,7 +92,12 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         //
-        User::where('slug', $id)->first()->delete();
+        $user = User::where('slug', $id)->first();
+        $user->is_deleted = 'Y';
+        $user->deleted_date = Carbon::now();
+        $user->deleted_by = Auth::user()->id;
+        $user->update();
+        // ->delete();
 
         Alert::toast('Data Terhapus', 'success');
         return redirect('user');
@@ -90,7 +114,7 @@ class UserController extends Controller
             'password' => 'required|min:6|confirmed'
         ]);
         $password = Hash::make($request->password);
-        
+
         $user->update([
             'password' => $password
         ]);

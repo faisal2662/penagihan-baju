@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->string('customer_id', 50);
+            $table->unsignedBigInteger('customer_id');
             $table->foreign('customer_id')->references('id')->on('customers');
             $table->bigInteger('remaining');
             $table->bigInteger('temporary');

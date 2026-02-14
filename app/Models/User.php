@@ -23,9 +23,16 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'slug',
-        'slug_role',
+        'role_id',
         'username',
         'password',
+        'created_date',
+        'created_by',
+        'updated_date',
+        'updated_by',
+        'deleted_date',
+        'deleted_by',
+        'is_deleted',
         'number'
     ];
 
@@ -49,7 +56,7 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    
+
     public function sluggable(): array
     {
         return [
@@ -66,6 +73,6 @@ class User extends Authenticatable
      */
     public function role(): HasOne
     {
-        return $this->hasOne(Role::class, 'slug', 'slug_role');
+        return $this->hasOne(Role::class, 'id', 'role_id');
     }
 }

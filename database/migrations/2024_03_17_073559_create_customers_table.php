@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('price_list_id');
             $table->foreign('price_list_id')->references('id')->on('price_lists');
             $table->string('name', 50)->unique();
-            $table->string('color_id',50);
+            $table->unsignedBigInteger('color_id');
             $table->foreign('color_id')->references('id')->on('colors');
             $table->unsignedBigInteger('category_id');
             $table->foreign('category_id')->references('id')->on('categories');

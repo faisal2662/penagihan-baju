@@ -112,9 +112,12 @@
                             <label for="role" class="form-label">Role <span class=" text-danger"
                                     style="font-size:10pt;"> *
                                     Wajib</span></label>
-                            <select name="slug_role" class="form-control" id="role" required>
-                                <option value="humas">Humas</option>
-                                <option value="admin">Admin</option>
+                            <select name="role_id" class="form-control" id="role" required>
+                                @foreach ($roles as $item)
+
+                                <option value="{{ $item->id }}"> {{ $item->name }} </option>
+
+                                @endforeach
                             </select>
                         </div>
                         <div class="mb-3">
@@ -156,7 +159,7 @@
                     <div class="modal-body">
                         <form action="/user/{{ $item->slug }}" method="post">
                             @csrf
-                            @method('put')
+                            @method('PUT')
                             <div class="mb-3">
                                 <label for="nama" class="form-label">Nama <span class=" text-danger"
                                         style="font-size:10pt;"> *
@@ -180,10 +183,13 @@
                                 <label for="role" class="form-label">Role <span class=" text-danger"
                                         style="font-size:10pt;"> *
                                         Wajib</span></label>
-                                <select name="slug_role" class="form-control" id="role" required>
-                                    <option value="humas" @if ($item->slug_role == 'humas') selected @endif>Humas</option>
-                                    <option value="admin" @if ($item->slug_role == 'admin') selected @endif>Admin</option>
-                                </select>
+                                  <select name="role_id" class="form-control" id="role" required>
+                                @foreach ($roles as $role)
+
+                                <option value="{{ $role->id }}" {{ $role->id == $item->role_id ? 'selected' : '' }}> {{ $role->name }} </option>
+
+                                @endforeach
+                            </select>
                             </div>
 
                     </div>
@@ -201,7 +207,7 @@
 
     {{-- modal password --}}
     @foreach ($users as $item)
-        <div class="modal" id="password{{ $item->slug }}" data-bs-backdrop="static" data-bs-keyboard="false"
+        <div class="modal" id="password{{ $item->slug }}"
             tabindex="-1">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
