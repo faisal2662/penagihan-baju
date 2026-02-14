@@ -16,6 +16,12 @@
                 <span>Penagihan</span>
             </a>
         </li><!-- End Profile Page Nav -->
+        <li class="nav-item">
+            <a class="nav-link  {{ Request::is('taking') ? '' : ' collapsed' }}" href="/taking">
+                <i class="bi bi-arrow-up-right-square"></i>
+                <span>Pengambilan</span>
+            </a>
+        </li><!-- End Profile Page Nav -->
 
 
         <li class="nav-heading">Pages</li>

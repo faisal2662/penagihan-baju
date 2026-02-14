@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\TakingController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
@@ -30,6 +31,7 @@ use App\Http\Controllers\TransactionController;
 
 Route::get('/login', [LoginController::class, 'index'])->name('login');
 Route::post('/login', [LoginController::class, 'authenticate']);
+// Route::post('/taking/search', [TakingController::class, 'search']);
 
 
 Route::middleware('auth')->group(function () {
@@ -41,7 +43,7 @@ Route::middleware('auth')->group(function () {
         $pay = Payment::get();
         $sess = session::get();
         $trans = Transaction::where('created_at', 'like', '%' . Carbon::now()->format('Y-m-d') . '%')->get()->sum('cash');
-        return view('index', compact('customer', 'pay','trans','sess'));
+        return view('index', compact('customer', 'pay', 'trans', 'sess'));
     });
     Route::get('customer', [CustomerController::class, 'index']);
     Route::get('add-customer', [CustomerController::class, 'create']);
@@ -54,7 +56,10 @@ Route::middleware('auth')->group(function () {
     Route::post('transaction', [TransactionController::class, 'store']);
     Route::get('/search-name', [CustomerController::class, 'searchName']);
     Route::get('/result', [CustomerController::class, 'resultName']);
-    Route::middleware( 'admin')->group(function () {
+    Route::get('/taking', [TakingController::class, 'index']);
+    Route::post('/taking/search', [TakingController::class, 'Search'])->name('take');
+
+    Route::middleware('admin')->group(function () {
         // down Payment
         Route::get('/down-payment', [DownPaymentController::class, 'index']);
         Route::post('/down-payment', [DownPaymentController::class, 'store']);
@@ -72,7 +77,7 @@ Route::middleware('auth')->group(function () {
 
         // user
         Route::resource('/user', UserController::class);
-        Route::post('/user-password/{id}',[UserController::class, 'confirmPass']);
+        Route::post('/user-password/{id}', [UserController::class, 'confirmPass']);
 
         // price list
         Route::get('/price-list', [PriceListController::class, 'index']);
@@ -85,7 +90,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/report-finance', [ReportController::class, 'reportFinance']);
         Route::get('/report-shirt', [ReportController::class, 'reportShirt']);
 
-        Route::get('/reset', function(){
+        Route::get('/reset', function () {
             return view('reset');
         });
 

@@ -244,7 +244,6 @@
         @endforeach
     @endforeach
 
-
     <div class="float-right">
         {{ $customers->withQueryString()->onEachSide(0)->links() }}
     </div>
