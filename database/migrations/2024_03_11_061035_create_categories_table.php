@@ -16,6 +16,13 @@ return new class extends Migration
             $table->string('slug',50)->unique();
             $table->string('name', 50)->unique();
             $table->integer('price')->nullable();
+             $table->integer('created_by')->nullable();
+            $table->dateTime('created_date')->nullable();
+            $table->integer('updated_by')->nullable();
+            $table->dateTime('updated_date')->nullable();
+            $table->integer('deleted_by')->nullable();
+            $table->dateTime('deleted_date')->nullable();
+            $table->enum('is_deleted', ['Y', 'N'])->default('N');
             $table->timestamps();
         });
     }

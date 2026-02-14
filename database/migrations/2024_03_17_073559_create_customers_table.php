@@ -14,16 +14,23 @@ return new class extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->string('slug', 50)->unique();
-            $table->string('slug_price_list');
-            $table->foreign('slug_price_list')->references('slug')->on('price_lists');
+            $table->unsignedBigInteger('price_list_id');
+            $table->foreign('price_list_id')->references('id')->on('price_lists');
             $table->string('name', 50)->unique();
-            $table->string('slug_color',50);
-            $table->foreign('slug_color')->references('slug')->on('colors');
-            $table->string('slug_category',50);
-            $table->foreign('slug_category')->references('slug')->on('categories');
-            $table->string('slug_session',50);
-            $table->foreign('slug_session')->references('slug')->on('sessions');
+            $table->string('color_id',50);
+            $table->foreign('color_id')->references('id')->on('colors');
+            $table->unsignedBigInteger('category_id');
+            $table->foreign('category_id')->references('id')->on('categories');
+            $table->unsignedBigInteger('sessions_id');
+            $table->foreign('sessions_id')->references('id')->on('sessions');
             $table->enum('status', ['Lunas', 'Belum Lunas'])->default('Belum Lunas');
+             $table->integer('created_by')->nullable();
+            $table->dateTime('created_date')->nullable();
+            $table->integer('updated_by')->nullable();
+            $table->dateTime('updated_date')->nullable();
+            $table->integer('deleted_by')->nullable();
+            $table->dateTime('deleted_date')->nullable();
+            $table->enum('is_deleted', ['Y', 'N'])->default('N');
             $table->timestamps();
         });
     }

@@ -13,11 +13,18 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->string('slug_customer',50);
-            $table->foreign('slug_customer')->references('slug')->on('customers');
+            $table->string('customer_id', 50);
+            $table->foreign('customer_id')->references('id')->on('customers');
             $table->bigInteger('remaining');
             $table->bigInteger('temporary');
             $table->bigInteger('total');
+            $table->integer('created_by')->nullable();
+            $table->dateTime('created_date')->nullable();
+            $table->integer('updated_by')->nullable();
+            $table->dateTime('updated_date')->nullable();
+            $table->integer('deleted_by')->nullable();
+            $table->dateTime('deleted_date')->nullable();
+            $table->enum('is_deleted', ['Y', 'N'])->default('N');
             $table->timestamps();
         });
     }
