@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class CategoryController extends Controller
@@ -14,7 +16,7 @@ class CategoryController extends Controller
     public function index()
     {
         //
-        $category = Category::all();
+        $category = Category::where('is_deleted', 'N')->get();
         return view('master.category', compact('category'));
     }
 
@@ -30,10 +32,22 @@ class CategoryController extends Controller
             'price' => 'required'
         ]);
 
-        Category::create($request->all());
+        try {
+            //code...
+            $category = new Category;
+            $category->name = $request->name;
+            $category->price = str_replace(',', '', $request->price);
+            $category->created_date = Carbon::now();
+            $category->created_by = Auth::user()->id;
+            $category->save();
 
-        Alert::toast('Data Tersimpan', 'success');
-        return redirect('category');
+
+            Alert::toast('Data Tersimpan', 'success');
+            return redirect('category');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json($th->getMessage());
+        }
     }
 
     /**
@@ -50,18 +64,28 @@ class CategoryController extends Controller
     public function update(Request $request, string $id)
     {
         //
-          $request->validate([
-            'name' => 'required|unique:categories',
+        $request->validate([
+            'name' => 'required|',
             'price' => 'required'
         ]);
 
-        $category = Category::where('slug', $id)->first();
-        
-        $category->slug =null;
-        $category->update($request->all());
+        try {
+            //code...
+            $category = Category::where('slug', $id)->first();
+            $category->name = $request->name;
+            $category->price = str_replace(',', '', $request->price);
+            $category->slug = null;
+            $category->updated_date = Carbon::now();
+            $category->updated_by = Auth::user()->id;
 
-        Alert::toast('Data Tersimpan', 'success');
-        return redirect('category');
+            $category->update();
+
+            Alert::toast('Data Tersimpan', 'success');
+            return redirect('category');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json($th->getMessage());
+        }
     }
 
     /**
@@ -70,10 +94,20 @@ class CategoryController extends Controller
     public function destroy(string $id)
     {
         //
-        Category::where('slug', $id)->first()->delete();
+        try {
 
-        Alert::toast('Data Terhapus', 'success');
-        return redirect('category');
 
+            $category = Category::where('slug', $id)->first();
+
+            $category->deleted_date = Carbon::now();
+            $category->deleted_by = Auth::user()->id;
+            $category->is_deleted = 'Y';
+            $category->update();
+            Alert::toast('Data Terhapus', 'success');
+            return redirect('category');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json($th->getMessage());
+        }
     }
 }

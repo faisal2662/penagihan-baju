@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Color;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class ColorController extends Controller
@@ -14,7 +16,7 @@ class ColorController extends Controller
     public function index()
     {
         //
-        $colors = Color::all();
+        $colors = Color::where('is_deleted', 'N')->get();
         return view('master.color', compact('colors'));
     }
 
@@ -28,10 +30,19 @@ class ColorController extends Controller
             'name' => 'required|unique:colors'
         ]);
 
-        Color::create($request->all());
-
-        Alert::toast('Data Tersimpan', 'success');
-        return redirect('color');
+        try {
+            //code...
+            $color = new Color;
+            $color->name= $request->name;
+            $color->created_by = Auth::user()->id;
+            $color->created_date = Carbon::now();
+            $color->save();
+            Alert::toast('Data Tersimpan', 'success');
+            return redirect('color');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json($th->getMessage());
+        }
     }
 
     /**
@@ -52,13 +63,21 @@ class ColorController extends Controller
             'name' => 'required|unique:colors'
         ]);
 
-        $color = Color::where('slug', $id)->first();
-        $color->slug = null;
+        try {
+            //code...
+            $color = Color::where('slug', $id)->first();
+            $color->name= $request->name;
+            $color->slug = null;
+            $color->updated_date = Carbon::now();
+            $color->updated_by = Auth::user()->id;
+            $color->update();
 
-        $color->update($request->all());
-
-        Alert::toast('Data Tersimpan', 'success');
-        return redirect('color');
+            Alert::toast('Data Tersimpan', 'success');
+            return redirect('color');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json($th->getMessage());
+        }
     }
 
     /**
@@ -67,9 +86,20 @@ class ColorController extends Controller
     public function destroy(string $id)
     {
         //
-        Color::where('slug', $id)->first()->delete();
-        
-         Alert::toast('Data Terhapus', 'success');
-        return redirect('color');
+
+        try {
+            //code...
+            $color  = Color::where('slug', $id)->first();
+            $color->deleted_date = Carbon::now();
+            $color->deleted_by = Auth::user()->id;
+            $color->is_deleted = 'Y';
+            $color->update();
+
+            Alert::toast('Data Terhapus', 'success');
+            return redirect('color');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json($th->getMessage());
+        }
     }
 }

@@ -32,7 +32,7 @@
                                         <select class="form-control" style="width:80%;" name="session">
                                             <option selected disabled>Cari Sesi</option>
                                             @foreach ($searchsess as $item)
-                                                <option value="{{ $item->slug }}">{{ $item->name }}</option>
+                                                <option value="{{ $item->id }}">{{ $item->name }}</option>
                                             @endforeach
                                         </select>
 
@@ -247,35 +247,14 @@
     <div class="float-right">
         {{ $customers->withQueryString()->onEachSide(0)->links() }}
     </div>
+    @section('script')
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        {{-- <script src="{{ asset('assets/select2') }}"></script> --}}
+        <script>
+            $(document).ready(function() {
+                $('.name').select2();
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('.name').select2();
-
-        });
-    </script>
-    {{-- <script>
-        const cari = document.getElementById('cari');
-        const name = document.getElementsByClassName('name')[0];
-        const table = document.getElementsByClassName('table')[0];
-
-        cari.addEventListener('click', function(e) {
-            const resultName = name.value;
-            // console.log(resultName)
-            const url = "/result?search=" + resultName;
-
-            fetch(url)
-                .then((resp) => resp.json())
-                .then(function(data) {
-                    console.log(data);
-                    table.innerHTML = '';
-
-
-                })
-
-
-        });
-    </script> --}}
+            });
+        </script>
+    @endsection
 @endsection

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\PriceList;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class PriceListController extends Controller
@@ -14,8 +16,8 @@ class PriceListController extends Controller
     public function index()
     {
         //
-        $priceLists = PriceList::all();
-        return view('price-list', compact('priceLists'));
+        $priceLists = PriceList::where('is_deleted', 'N')->get();
+        return view('master.price-list', compact('priceLists'));
     }
 
     /**
@@ -30,9 +32,22 @@ class PriceListController extends Controller
             'price_sale' => 'required'
         ]);
 
-        PriceList::create($request->all());
-        Alert::toast('Data Tersimpan', 'success');
-        return redirect('/price-list');
+        try {
+            $priceList = new PriceList;
+            $priceList->size = $request->size;
+            $priceList->price_sale = str_replace(',', '', $request->price_sale);
+            $priceList->price = str_replace(',', '', $request->price);
+            $priceList->created_by = Auth::user()->id;
+            $priceList->created_date = Carbon::now();
+            $priceList->save();
+
+            Alert::toast('Data Tersimpan', 'success');
+            return redirect('/price-list');
+            //code...
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json($th->getMessage());
+        }
     }
 
     /**
@@ -49,18 +64,27 @@ class PriceListController extends Controller
     public function update(Request $request, string $id)
     {
         //
-           $request->validate([
+        $request->validate([
             'size' => 'required',
             'price' => 'required',
             'price_sale' => 'required'
         ]);
 
-        $pl = PriceList::where('id', $id)->first();
+        try {
+            $priceList = PriceList::where('id', $id)->first();
+            $priceList->size = $request->size;
+            $priceList->price_sale = str_replace(',', '', $request->price_sale);
+            $priceList->price = str_replace(',', '', $request->price);
+            $priceList->updated_by = Auth::user()->id;
+            $priceList->updated_date = Carbon::now();
+            $priceList->update();
 
-        $pl->slug = null;
-        $pl->update($request->all());
-        Alert::toast('Data Tersimpan', 'success');
-        return redirect('/price-list');
+            Alert::toast('Data Tersimpan', 'success');
+            return redirect('/price-list');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json($th->getMessage());
+        }
     }
 
     /**
@@ -69,8 +93,19 @@ class PriceListController extends Controller
     public function destroy(string $id)
     {
         //
-        PriceList::where('id', $id)->first()->delete();
-        Alert::toast('Data Terhapus', 'Success');
-        return redirect('/price-list');
+
+        try {
+            $priceList = PriceList::where('id', $id)->first();
+            $priceList->deleted_by = Auth::user()->id;
+            $priceList->deleted_date = Carbon::now();
+            $priceList->is_deleted = 'Y';
+            $priceList->update();
+
+            Alert::toast('Data Terhapus', 'success');
+            return redirect('/price-list');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json($th->getMessage());
+        }
     }
 }

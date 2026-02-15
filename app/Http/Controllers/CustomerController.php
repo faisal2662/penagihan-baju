@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Color;
-use App\Models\Payment;
-use App\Models\session;
 use App\Models\Category;
+use App\Models\Color;
 use App\Models\Customer;
+use App\Models\Payment;
 use App\Models\PriceList;
+use App\Models\session;
 use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use RealRashid\SweetAlert\Facades\Alert;
+use Yajra\DataTables\DataTables;
 
 class CustomerController extends Controller
 {
@@ -24,7 +26,7 @@ class CustomerController extends Controller
         if ($request->name) {
             $customers = Customer::with(['pricelist', 'payment', 'color', 'category', 'session',  'transaction'])->where('name', 'like', '%' . $request->name . '%')->paginate();
         } else if ($request->session) {
-            $customers = Customer::with(['pricelist', 'payment', 'color', 'category', 'session',  'transaction'])->where('slug_session', 'like', '%' . $request->session . '%')->paginate(10);
+            $customers = Customer::with(['pricelist', 'payment', 'color', 'category', 'session',  'transaction'])->where('sessions_id', 'like', '%' . $request->session . '%')->paginate(10);
         } else {
             $customers = Customer::with(['pricelist', 'payment', 'color', 'category', 'session',  'transaction'])->paginate(20);
             // dd($customers);
@@ -34,12 +36,25 @@ class CustomerController extends Controller
         return view('customers/index', compact('customers', 'searchCustomers', 'searchsess'));
     }
 
+    public function datatable(Request $request)
+    {
+        if ($request->name) {
+            $customers = Customer::with(['pricelist', 'payment', 'color', 'category', 'session',  'transaction'])->where('name', 'like', '%' . $request->name . '%')->paginate();
+        } else if ($request->session) {
+            $customers = Customer::with(['pricelist', 'payment', 'color', 'category', 'session',  'transaction'])->where('sessions_id', 'like', '%' . $request->session . '%')->paginate(10);
+        } else {
+            $customers = Customer::with(['pricelist', 'payment', 'color', 'category', 'session',  'transaction'])->paginate(20);
+            // dd($customers);
+        }
+        return DataTables::of($customers)->escapecolumns([])->make(true);
+    }
+
     public function create()
     {
-        $price = PriceList::all();
-        $category = Category::all();
-        $sess = session::all();
-        $color = Color::all();
+        $price = PriceList::where('is_deleted', 'N')->get();
+        $category = Category::where('is_deleted', 'N')->get();
+        $sess = session::where('is_deleted', 'N')->get();
+        $color = Color::where('is_deleted', 'N')->get();
         return view('customers/create', compact('price', 'color', 'category', 'sess'));
     }
 
@@ -54,33 +69,42 @@ class CustomerController extends Controller
             'status' => 'required',
         ]);
 
-        $temp = 0;
+        try {
+            //code...
+            $temp = 0;
 
-        if ($request->status == 'Lunas') {
-            $temp = $request->total;
+            if ($request->status == 'Lunas') {
+                $temp = $request->total;
+            }
+
+            // // dd($temp);
+            Customer::create([
+                'name' => $request->name,
+                'price_list_id' => $request->size,
+                'color_id' => $request->color,
+                'category_id' => $request->category,
+                'session_id' => $request->session,
+                'status' => $request->status,
+                'created_by' => Auth::user()->id,
+                'created_date' => Carbon::now()
+            ]);
+            $cus = Customer::where('name', $request->name)->first();
+
+            Payment::create([
+                'customer_id' => $cus->id,
+                'remaining' => $request->total,
+                'temporary' => $temp,
+                'total' => $request->total
+
+            ]);
+
+            Alert::toast('Data Tersimpan', 'success');
+            return redirect()->back();
+            } catch (\Throwable $th) {
+                //throw $th;
+                return response()->json($th->getMessage());
+                Alert::toast('Terjadi Kesalahan', 'warning');
         }
-
-        // // dd($temp);
-        Customer::create([
-            'name' => $request->name,
-            'slug_price_list' => $request->size,
-            'slug_color' => $request->color,
-            'slug_category' => $request->category,
-            'slug_session' => $request->session,
-            'status' => $request->status,
-        ]);
-        $cus = Customer::where('name', $request->name)->first()->slug;
-
-        Payment::create([
-            'slug_customer' => $cus,
-            'remaining' => $request->total,
-            'temporary' => $temp,
-            'total' => $request->total
-
-        ]);
-
-        Alert::toast('Data Tersimpan', 'success');
-        return redirect()->back();
     }
 
     public function edit($id)
@@ -161,22 +185,26 @@ class CustomerController extends Controller
         return redirect('customer');
     }
 
+
     public function searchName(Request $request)
     {
-        $data = '';
-        $search =   $request->get('search');
+        $search =   $request->name;
 
-        if ($search != '') {
-            $data = Customer::where('name', 'like', '%' .  $search . '%')->take(5)->get();
+        try {
+            //code...
+            $data = Customer::where('name', 'like', '%' .  $search . '%')->select('name')->get();
             // $data = 'dfdf';
+            return response()->json(['name' => $data], 200);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json($th->getMessage(), 500);
         }
-        return json_encode($data);
     }
 
     public function resultName(Request $request)
     {
         $data = '';
-        $search = $request->get('search');
+        $search = $request->name;
 
         // if ($search != '') {
         //     $data =  Customer::with(['pricelist', 'transaction', 'payment'])->where('name', 'like', '%' .  $search . '%')->first();

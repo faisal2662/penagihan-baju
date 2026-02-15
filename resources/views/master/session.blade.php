@@ -18,7 +18,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="float-end mt-3"><!-- Button trigger modal -->
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambah">
+                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#tambah">
                                 Tambah
                             </button>
                         </div>
@@ -51,10 +51,10 @@
                                             <td style="max-width:100%;white-space:nowrap;">{{ $item->name }}</td>
                                             <td style="max-width:100%;white-space:nowrap;">{{ $item->date }}</td>
                                             <td style="max-width:100%;white-space:nowrap;"> <button type="button"
-                                                    class="btn btn-info" data-bs-toggle="modal"
+                                                    class="btn btn-sm btn-info" data-bs-toggle="modal"
                                                     data-bs-target="#edit{{ $item->slug }}">
                                                     <i class="bi bi-pencil-square"></i>
-                                                </button> || <button type="button" class="btn btn-danger"
+                                                </button> || <button type="button" class="btn btn-sm btn-danger"
                                                     data-bs-toggle="modal" data-bs-target="#hapus{{ $item->slug }}">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
@@ -91,8 +91,8 @@
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-success">Simpan</button>
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-sm btn-success">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -126,8 +126,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-success">Updated</button>
+                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-sm btn-success">Updated</button>
                         </div>
                     </form>
                 </div>
@@ -152,8 +152,8 @@
                         @csrf
                         @method('delete')
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-sm btn-danger">Ya, Hapus</button>
                         </div>
                     </form>
                 </div>

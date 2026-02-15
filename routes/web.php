@@ -47,14 +47,14 @@ Route::middleware('auth')->group(function () {
     });
     Route::get('customer', [CustomerController::class, 'index']);
     Route::get('add-customer', [CustomerController::class, 'create']);
-    Route::post('add-customer', [CustomerController::class, 'store']);
+    Route::post('add-customer', [CustomerController::class, 'store'])->name('customer.add');
     Route::get('edit-customer/{name}', [CustomerController::class, 'edit']);
     Route::post('edit-customer/{name}', [CustomerController::class, 'update']);
     Route::get('delete-customer/{name}', [CustomerController::class, 'destroy']);
     Route::get('billing', [TransactionController::class, 'index']);
     Route::post('/delete-transaction/{id}', [TransactionController::class, 'destroy']);
     Route::post('transaction', [TransactionController::class, 'store']);
-    Route::get('/search-name', [CustomerController::class, 'searchName']);
+    Route::get('/search-name', [CustomerController::class, 'searchName'])->name('customer.getName');
     Route::get('/result', [CustomerController::class, 'resultName']);
     Route::get('/taking', [TakingController::class, 'index']);
     Route::post('/taking/search', [TakingController::class, 'Search'])->name('take');

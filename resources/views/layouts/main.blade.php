@@ -27,6 +27,11 @@
     <!-- Template Main CSS File -->
 
     <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/boxicons/fonts/basic/boxicons.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/boxicons/fonts/animations.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/boxicons/fonts/transformations.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/notiflix/src/notiflix.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/datatables/datatables.min.css') }}" rel="stylesheet">
 
     <!-- =======================================================
   * Template Name: NiceAdmin
@@ -66,8 +71,92 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
     </script>
-
-    <script src="{{ asset('assets/js/main.js') }}"></script>
+<script src="{{ asset('assets/js/main.js') }}"></script>
+    <script src="{{ asset('assets/jquery/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('assets/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery.number.js') }}"></script>
+     <script src="{{ asset('assets/notiflix/src/notiflix.js') }}"></script>
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        Notiflix.Confirm.init({
+            width: '350px',
+            titleColor: '#3656dc',
+            okButtonBackground: '#3656dc',
+        });
+        Notiflix.Loading.init({
+            backgroundColor: '#4b49a14d',
+            svgColor: '#0f12b6',
+        })
+        Notiflix.Notify.init({
+            width: '280px',
+            position: 'right-top',
+            distance: '10px',
+            opacity: 1,
+            borderRadius: '5px',
+            rtl: false,
+            timeout: 3000,
+            messageMaxLength: 110,
+            backOverlay: false,
+            backOverlayColor: 'rgba(0,0,0,0.5)',
+            plainText: true,
+            showOnlyTheLastOne: false,
+            clickToClose: false,
+            pauseOnHover: true,
+            ID: 'NotiflixNotify',
+            className: 'notiflix-notify',
+            zindex: 4001,
+            fontFamily: 'Quicksand',
+            fontSize: '13px',
+            cssAnimation: true,
+            cssAnimationDuration: 400,
+            cssAnimationStyle: 'fade',
+            closeButton: false,
+            useIcon: true,
+            useFontAwesome: false,
+            fontAwesomeIconStyle: 'basic',
+            fontAwesomeIconSize: '34px',
+            success: {
+                background: '#32c682',
+                textColor: '#fff',
+                childClassName: 'notiflix-notify-success',
+                notiflixIconColor: 'rgba(0,0,0,0.2)',
+                fontAwesomeClassName: 'fas fa-check-circle',
+                fontAwesomeIconColor: 'rgba(0,0,0,0.2)',
+                backOverlayColor: 'rgba(50,198,130,0.2)',
+            },
+            failure: {
+                background: '#ff5549',
+                textColor: '#fff',
+                childClassName: 'notiflix-notify-failure',
+                notiflixIconColor: 'rgba(0,0,0,0.2)',
+                fontAwesomeClassName: 'fas fa-times-circle',
+                fontAwesomeIconColor: 'rgba(0,0,0,0.2)',
+                backOverlayColor: 'rgba(255,85,73,0.2)',
+            },
+            warning: {
+                background: '#eebf31',
+                textColor: '#fff',
+                childClassName: 'notiflix-notify-warning',
+                notiflixIconColor: 'rgba(0,0,0,0.2)',
+                fontAwesomeClassName: 'fas fa-exclamation-circle',
+                fontAwesomeIconColor: 'rgba(0,0,0,0.2)',
+                backOverlayColor: 'rgba(238,191,49,0.2)',
+            },
+            info: {
+                background: '#26c0d3',
+                textColor: '#fff',
+                childClassName: 'notiflix-notify-info',
+                notiflixIconColor: 'rgba(0,0,0,0.2)',
+                fontAwesomeClassName: 'fas fa-info-circle',
+                fontAwesomeIconColor: 'rgba(0,0,0,0.2)',
+                backOverlayColor: 'rgba(38,192,211,0.2)',
+            },
+        });
+    </script>
     @yield('script')
 
 </body>
